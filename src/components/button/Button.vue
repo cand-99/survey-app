@@ -17,7 +17,7 @@ const props = defineProps({
     default: "indigo",
   },
   full: Boolean
-  
+
 });
 
 let classes = ref([
@@ -26,12 +26,9 @@ let classes = ref([
   "border",
   "border-transparent",
   "items-center",
-  "text-white",
-  "font-medium",
-  "px-4",
-  "py-2",
-  "rounded-md",
 ]);
+
+
 
 
 switch (props.color) {
@@ -44,6 +41,12 @@ switch (props.color) {
         "focus:ring-2",
         "focus:ring-offset-2",
         "focus:ring-indigo-500",
+        "rounded-md",
+        "px-4",
+        "py-2",
+        "font-medium",
+        "text-white",
+         "text-sm",
       ];
       break;
     case "red":
@@ -55,6 +58,12 @@ switch (props.color) {
         "focus:ring-2",
         "focus:ring-offset-2",
         "focus:ring-red-500",
+        "rounded-md",
+        "px-4",
+        "py-2",
+        "font-medium",
+        "text-white",
+        "text-sm",
       ];
       break;
     case "green":
@@ -66,6 +75,38 @@ switch (props.color) {
         "focus:ring-2",
         "focus:ring-offset-2",
         "focus:ring-emerald-500",
+        "rounded-md",
+        "px-4",
+        "py-2",
+        "font-medium",
+        "text-white",
+        "text-sm",
+      ];
+      break;
+    case "gray":
+      classes.value = [
+        ...classes.value,
+        "bg-gray-600",
+        "hover:bg-gray-700",
+        "focus:outline-none",
+        "focus:ring-2",
+        "focus:ring-offset-2",
+        "focus:ring-gray-500",
+        "px-2",
+        "py-1",
+        "text-white",
+        "text-sm",
+      ];
+      break;
+    case "outline":
+      classes.value = [
+        ...classes.value,
+        "px-2",
+        "py-1",
+        "text-red-500",
+        "hover:border-red-500",
+         "text-xs",
+  
       ];
       break;
   }
