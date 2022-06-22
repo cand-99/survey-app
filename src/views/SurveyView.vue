@@ -132,8 +132,9 @@
 </template>
 
 <script setup>
+import { v4 as uuidv4 } from "uuid";
 import { PlusIcon } from "@heroicons/vue/solid";
-import { ref } from "vue";
+import { ref, vModelRadio } from "vue";
 import store from "../store";
 import { useRoute } from "vue-router";
 import PageComponent from "../components/PageComponent.vue";
@@ -159,9 +160,33 @@ if (route.params.id) {
   );
 }
 
-const add = () => {
-  alert("fdsfdsfs");
-};
+const addQuestion = (index) => {
+  const newQuestion = {
+    id: uuidv4(),
+    type: "text",
+    question: "",
+    description: "",
+    data: {},
+  };
+  model.value.questions.splice(index, 0, newQuestion);
+}
+
+const deleteQuestion = (question) => {
+  model.value.questions = model.value.questions.filter(
+    (q) => q.id !== question.id
+  ); 
+}
+
+const questionChange = (question) => {
+  model.value.questions = model.value.questions.map((q) => {
+    if (q.id === question.id) {
+      return JSON.parse(JSON.stringify(question));
+
+    }
+    return q;
+  });
+}
+
 </script>
 
 <style lang="scss" scoped></style>
