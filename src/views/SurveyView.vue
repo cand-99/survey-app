@@ -16,8 +16,8 @@
             <Label for="image" value="Image" />
             <div class="mt-1 flex items-center">
               <img
-                v-if="model.image"
-                :src="model.image"
+                v-if="model.image_url"
+                :src="model.image_url"
                 :alt="model.title"
                 class="w-64 h-48 object-cover"
               />
@@ -157,8 +157,20 @@ let model = ref({
 
 if (route.params.id) {
   model.value = store.state.surveys.find(
-    (s) => s.id === parseInt(route.params.id)
+    (s) => s.id === parseInt(route.params.id) 
   );
+}
+
+const onImageChoose = (ev) => {
+  const file = ev.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    model.value.image = reader.result;
+
+    model.value.image_url = reader.result;
+  };
+  reader.readAsDataURL(file);
 }
 
 const addQuestion = (index) => {
