@@ -1,7 +1,7 @@
 <template>
 <div class="relative">
   <input
-    required
+   
     :class="{ 'border-red-400 text-red-700': errors, 'text-gray-900' : !errors   }"
     :id="id"
     :type="type"

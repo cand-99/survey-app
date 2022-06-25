@@ -19,10 +19,9 @@
   <div class="grid gap-3 grid-cols-12">
     <!-- question -->
     <div class="col-span-9 mt-3">
-      <Label :for="`question_text_` + model.data" value="Question Text" />
+      <Label :for="`question_text_` + model.id" value="Question Text" />
       <Input
-        :name="`question_text_` + model.data"
-        :id="`question_text_` + model.data"
+        :id="`question_text_` + model.id"
         v-model="model.question"
         @change="dataChange"
       />
@@ -31,7 +30,6 @@
     <div class="mt-3 col-span-3">
       <Label for="question_type" value="Select Question Type" />
       <select
-        name="question_type"
         id="question_type"
         v-model="model.type"
         @change="typeChange"

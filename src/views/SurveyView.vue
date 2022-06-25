@@ -1,5 +1,5 @@
 <template>
-  <PageComponent title="View">
+  <PageComponent>
     <template #header>
       <div class="flex justify-between">
         <h1 class="text-3xl font-bold text-gray-900">
@@ -8,7 +8,11 @@
       </div>
     </template>
 
-    <form class="space-y-7" @submit.prevent="saveSurvey">
+    <div class="text-center" v-if="surveyLoading">
+      Loading. . . 
+    </div>
+
+    <form v-else class="space-y-7" @submit.prevent="saveSurvey">
       <div class="shadow sm:rounded-md sm:overflow-hidden">
         <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
           <!-- Image -->
@@ -16,8 +20,8 @@
             <Label for="image" value="Image" />
             <div class="mt-1 flex items-center">
               <img
-                v-if="model.image"
-                :src="model.image"
+                v-if="model.image_url"
+                :src="model.image_url"
                 :alt="model.title"
                 class="w-64 h-48 object-cover"
               />
@@ -109,9 +113,9 @@
             </Button>
           </div>
 
-         <div v-if="!model.questions.length" class="text-center text-gray-600">
+        <!-- <div v-if="!model.questions.length" class="text-center text-gray-600">
             You don't have any questions created
-          </div>
+          </div> -->
           <div v-for="(question, index) in model.questions" :key="question.id">
             <QuestionEditor
               :question="question"
@@ -134,9 +138,9 @@
 <script setup>
 import { v4 as uuidv4 } from "uuid";
 import { PlusIcon } from "@heroicons/vue/solid";
-import { ref, vModelRadio } from "vue";
+import { computed, ref, watch } from "vue";
 import store from "../store";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import PageComponent from "../components/PageComponent.vue";
 import Input from "../components/core/Input.vue";
 import Label from "../components/core/Label.vue";
@@ -144,6 +148,7 @@ import Button from "../components/button/Button.vue";
 import QuestionEditor from "../components/editor/QuestionEditor.vue"
 
 const route = useRoute();
+const router = useRouter();
 
 let model = ref({
   title: "",
@@ -154,10 +159,32 @@ let model = ref({
   questions: [],
 });
 
+const surveyLoading = computed (() => store.state.currentSurvey.loading);
+
+watch(
+  () => store.state.currentSurvey.data,
+  (newVal, oldVal) => {
+    model.value = {
+      ...JSON.parse(JSON.stringify(newVal)),
+      status:newVal.status !== "draft",
+    };
+  }
+);
+
 if (route.params.id) {
-  model.value = store.state.surveys.find(
-    (s) => s.id === parseInt(route.params.id)
-  );
+  store.dispatch('getSurvey', route.params.id);
+}
+
+const onImageChoose = (ev) => {
+  const file = ev.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    model.value.image = reader.result;
+
+    model.value.image_url = reader.result;
+  };
+  reader.readAsDataURL(file);
 }
 
 const addQuestion = (index) => {
@@ -184,6 +211,15 @@ const questionChange = (question) => {
 
     }
     return q;
+  });
+}
+
+const saveSurvey = () => {
+   store.dispatch("saveSurvey", { ...model.value }).then(({ data }) => {
+    router.push({
+      name: "Survey",
+      params: {id: data.data.id}
+     });
   });
 }
 
