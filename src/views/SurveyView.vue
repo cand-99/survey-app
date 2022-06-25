@@ -1,5 +1,5 @@
 <template>
-  <PageComponent title="View">
+  <PageComponent>
     <template #header>
       <div class="flex justify-between">
         <h1 class="text-3xl font-bold text-gray-900">
@@ -8,7 +8,11 @@
       </div>
     </template>
 
-    <form class="space-y-7" @submit.prevent="saveSurvey">
+    <div class="text-center" v-if="surveyLoading">
+      Loading. . . 
+    </div>
+
+    <form v-else class="space-y-7" @submit.prevent="saveSurvey">
       <div class="shadow sm:rounded-md sm:overflow-hidden">
         <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
           <!-- Image -->
@@ -109,9 +113,9 @@
             </Button>
           </div>
 
-         <div v-if="!model.questions.length" class="text-center text-gray-600">
+        <!-- <div v-if="!model.questions.length" class="text-center text-gray-600">
             You don't have any questions created
-          </div>
+          </div> -->
           <div v-for="(question, index) in model.questions" :key="question.id">
             <QuestionEditor
               :question="question"
@@ -134,7 +138,7 @@
 <script setup>
 import { v4 as uuidv4 } from "uuid";
 import { PlusIcon } from "@heroicons/vue/solid";
-import { ref, vModelRadio } from "vue";
+import { computed, ref, watch } from "vue";
 import store from "../store";
 import { useRoute, useRouter } from "vue-router";
 import PageComponent from "../components/PageComponent.vue";
@@ -155,10 +159,20 @@ let model = ref({
   questions: [],
 });
 
+const surveyLoading = computed (() => store.state.currentSurvey.loading);
+
+watch(
+  () => store.state.currentSurvey.data,
+  (newVal, oldVal) => {
+    model.value = {
+      ...JSON.parse(JSON.stringify(newVal)),
+      status:newVal.status !== "draft",
+    };
+  }
+);
+
 if (route.params.id) {
-  model.value = store.state.surveys.find(
-    (s) => s.id === parseInt(route.params.id) 
-  );
+  store.dispatch('getSurvey', route.params.id);
 }
 
 const onImageChoose = (ev) => {
@@ -202,7 +216,6 @@ const questionChange = (question) => {
 
 const saveSurvey = () => {
    store.dispatch("saveSurvey", { ...model.value }).then(({ data }) => {
-    console.log(data);
     router.push({
       name: "Survey",
       params: {id: data.data.id}

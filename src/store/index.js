@@ -124,11 +124,31 @@ const store = createStore({
             expire_date: "2021-12-31 00:00:00",
           },
         ],
+        currentSurvey: {
+          loading: false,
+          data: {
+
+          }
+        },
         questionTypes: ["text", "select", "radio", "checkbox", "textarea"],
 
     },
     getters: {},
     actions: {
+      getSurvey({commit}, id){
+        commit("setCurrentSurveyLoading", true);
+        return axiosClient
+        .get(`/survey/${id}`)
+        .then((res) => {
+         commit("setCurrentSurvey", res.data);
+         commit("setCurrentSurveyLoading", false);
+        return res;
+        })
+        .catch((err) => {
+          commit("setCurrentSurveyLoading", false);
+          throw err;
+        });
+      },
       saveSurvey({ commit }, survey) {
         delete survey.image_url;
         let response; 
@@ -179,6 +199,12 @@ const store = createStore({
         }
     },
     mutations: {
+      setCurrentSurveyLoading: (state, loading) => {
+        state.currentSurvey.loading = loading;
+      },
+      setCurrentSurvey: (state, survey) => {
+        state.currentSurvey.data = survey.data;
+      },
        saveSurvey: (state, survey) => {
         state.surveys = [...state.surveys, survey.data];
        },
