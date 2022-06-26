@@ -135,6 +135,9 @@ const store = createStore({
     },
     getters: {},
     actions: {
+      deleteSurvey({}, id){
+        return axiosClient.delete(`/survey/${id}`);
+      },
       getSurvey({commit}, id){
         commit("setCurrentSurveyLoading", true);
         return axiosClient

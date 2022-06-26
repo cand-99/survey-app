@@ -5,12 +5,19 @@
         <h1 class="text-3xl font-bold text-gray-900">
           {{ model.id ? model.title : "Create a Survey" }}
         </h1>
+        <Button
+          color="red"
+          v-if="route.params.id"
+          type="button"
+          @click="deleteSurvey"
+        >
+          <TrashIcon class="h-5 w-5 mr-1" aria-hidden="true" />
+          Delete Survey
+        </Button>
       </div>
     </template>
 
-    <div class="text-center" v-if="surveyLoading">
-      Loading. . . 
-    </div>
+    <div class="text-center" v-if="surveyLoading">Loading. . .</div>
 
     <form v-else class="space-y-7" @submit.prevent="saveSurvey">
       <div class="shadow sm:rounded-md sm:overflow-hidden">
@@ -113,7 +120,7 @@
             </Button>
           </div>
 
-        <!-- <div v-if="!model.questions.length" class="text-center text-gray-600">
+          <!-- <div v-if="!model.questions.length" class="text-center text-gray-600">
             You don't have any questions created
           </div> -->
           <div v-for="(question, index) in model.questions" :key="question.id">
@@ -137,7 +144,7 @@
 
 <script setup>
 import { v4 as uuidv4 } from "uuid";
-import { PlusIcon } from "@heroicons/vue/solid";
+import { PlusIcon, TrashIcon } from "@heroicons/vue/solid";
 import { computed, ref, watch } from "vue";
 import store from "../store";
 import { useRoute, useRouter } from "vue-router";
@@ -145,7 +152,7 @@ import PageComponent from "../components/PageComponent.vue";
 import Input from "../components/core/Input.vue";
 import Label from "../components/core/Label.vue";
 import Button from "../components/button/Button.vue";
-import QuestionEditor from "../components/editor/QuestionEditor.vue"
+import QuestionEditor from "../components/editor/QuestionEditor.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -159,20 +166,20 @@ let model = ref({
   questions: [],
 });
 
-const surveyLoading = computed (() => store.state.currentSurvey.loading);
+const surveyLoading = computed(() => store.state.currentSurvey.loading);
 
 watch(
   () => store.state.currentSurvey.data,
   (newVal, oldVal) => {
     model.value = {
       ...JSON.parse(JSON.stringify(newVal)),
-      status:newVal.status !== "draft",
+      status: newVal.status !== "draft",
     };
   }
 );
 
 if (route.params.id) {
-  store.dispatch('getSurvey', route.params.id);
+  store.dispatch("getSurvey", route.params.id);
 }
 
 const onImageChoose = (ev) => {
@@ -185,7 +192,7 @@ const onImageChoose = (ev) => {
     model.value.image_url = reader.result;
   };
   reader.readAsDataURL(file);
-}
+};
 
 const addQuestion = (index) => {
   const newQuestion = {
@@ -196,31 +203,43 @@ const addQuestion = (index) => {
     data: {},
   };
   model.value.questions.splice(index, 0, newQuestion);
-}
+};
 
 const deleteQuestion = (question) => {
   model.value.questions = model.value.questions.filter(
     (q) => q.id !== question.id
-  ); 
-}
+  );
+};
 
 const questionChange = (question) => {
   model.value.questions = model.value.questions.map((q) => {
     if (q.id === question.id) {
       return JSON.parse(JSON.stringify(question));
-
     }
     return q;
   });
-}
+};
 
 const saveSurvey = () => {
-   store.dispatch("saveSurvey", { ...model.value }).then(({ data }) => {
+  store.dispatch("saveSurvey", { ...model.value }).then(({ data }) => {
     router.push({
       name: "Survey",
-      params: {id: data.data.id}
-     });
+      params: { id: data.data.id },
+    });
   });
+};
+
+const deleteSurvey = () => {
+
+  if (confirm('Are you sure you want to delete this survey?')){
+    store.dispatch("deleteSurvey", route.params.id).then(() => {
+      router.push({
+        name: "Surveys"
+      });
+    });
+  }
+
+
 }
 
 </script>
