@@ -10,55 +10,36 @@
       </div>
     </template>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-      <div
+      <SurveyListItem
         v-for="survey in surveys"
         :key="survey.id"
-        class="flex flex-col py-4 px-6 shadow-md bg-white hover:bg-gray-50 h-[470px"
-      >
-          <img class="object-contain w-full h-48" :src="survey.image" alt="" />
-          <h4 class="mt-4 text-lg font-bold">{{ survey.title }} </h4>
-          <div v-html="survey.description" class="overflow-hidden flex-1"></div>
-
-          <div class="mt-4 flex justify-between items-center">
-              <Button :to="{name: 'Survey', params: {id: survey.id} }">
-                <PencilIcon class="h-4 w-5 mr-1" aria-hidden="true" />
-                Edit  
-              </Button>
-
-              <div class="flex space-x-2">
-               <button>
-                    <ShareIcon class="h-5 w-5 mr-1 text-indigo-500" aria-hidden="true" />
-               </button>
-               <button v-if="survey.id" @click="deleteSurvey(survey)">
-                    <TrashIcon class="h-5 w-5 mr-1 text-red-500" aria-hidden="true" />
-               </button>
-              </div>
-          </div>
-      </div>
+        :survey="survey"
+        @delete="deleteSurvey(survey)"
+      />
     </div>
-
-    <pre>
-    {{ surveys }}
-    </pre>
   </PageComponent>
 </template>
 
 <script setup>
 import store from "../store";
 import { computed } from "vue";
-import { PlusIcon, PencilIcon, TrashIcon, ShareIcon } from "@heroicons/vue/solid";
+import { PlusIcon } from "@heroicons/vue/solid";
 import PageComponent from "../components/PageComponent.vue";
 import Button from "../components/button/Button.vue";
+import SurveyListItem from "../components/SurveyListItem.vue";
 
-const surveys = computed(() => store.state.surveys);
+const surveys = computed(() => store.state.surveys.data);
+
+store.dispatch("getSurveys");
 
 const deleteSurvey = (survey) => {
-  if (confirm('Areyou sure??')){
-    // delet survey
-    alert(`hapus ${survey.id}`)
-  }
-}
-
+  
+  if (confirm('Are you sure??')){
+     store.dispatch("deleteSurvey", survey.id).then(() => {
+      store.dispatch("getSurveys");
+    });
+    }
+};
 </script>
 
 <style lang="scss" scoped></style>
