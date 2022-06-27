@@ -120,9 +120,10 @@
             </Button>
           </div>
 
-          <!-- <div v-if="!model.questions.length" class="text-center text-gray-600">
+          <div v-if="!model.questions.length" class="text-center text-gray-600">
             You don't have any questions created
-          </div> -->
+          </div>
+
           <div v-for="(question, index) in model.questions" :key="question.id">
             <QuestionEditor
               :question="question"
@@ -159,9 +160,11 @@ const router = useRouter();
 
 let model = ref({
   title: "",
-  status: "",
-  description: "",
+  slug: "",
+  status: false,
+  description: null,
   image: null,
+  image_url: null,
   expire_date: null,
   questions: [],
 });
