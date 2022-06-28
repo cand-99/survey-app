@@ -3,7 +3,7 @@
     class="flex flex-col py-4 px-6 shadow-md bg-white hover:bg-gray-50 h-[470px"
   >
     <img class="object-contain w-full h-48" :src="survey.image_url" alt="" />
-    <h4 class="mt-4 text-lg font-bold">{{ survey.title }}</h4>
+    <h2 class="mt-4 text-lg font-bold">{{ survey.title }}</h2>
     <div v-html="survey.description" class="overflow-hidden flex-1"></div>
 
     <div class="mt-4 flex justify-between items-center">
@@ -13,10 +13,10 @@
       </Button>
 
       <div class="flex space-x-2">
-        <button>
+        <button aria-label="share" type="button">
           <ShareIcon class="h-5 w-5 mr-1 text-indigo-500" aria-hidden="true" />
         </button>
-        <button v-if="survey.id" @click="emit('delete', survey)">
+        <button v-if="survey.id" @click="emit('delete', survey)" aria-label="delete" type="button">
           <TrashIcon class="h-5 w-5 mr-1 text-red-500" aria-hidden="true" />
         </button>
       </div>

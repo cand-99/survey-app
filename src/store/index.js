@@ -9,6 +9,7 @@ const store = createStore({
         },
         surveys: {
           loading: false,
+          links: [],
           data : []
         },
         currentSurvey: {
@@ -30,9 +31,10 @@ const store = createStore({
       deleteSurvey({}, id){
         return axiosClient.delete(`/survey/${id}`);
       },
-      getSurveys({commit}){
+      getSurveys({commit}, {url = null} = {} ){
+        url = url || '/survey'
         commit('setSurveysLoading', true);
-        return axiosClient.get('/survey').then((res) => {
+        return axiosClient.get(url).then((res) => {
           commit('setSurveysLoading', false);
           commit('setSurveys', res.data);
           return res;
@@ -107,6 +109,7 @@ const store = createStore({
         state.currentSurvey.loading = loading;
       },
       setSurveys: (state, surveys) => {
+        state.surveys.links = surveys.meta.links;
         state.surveys.data = surveys.data;
       },
       setCurrentSurvey: (state, survey) => {
