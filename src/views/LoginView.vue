@@ -18,19 +18,6 @@
     </p>
   </div>
   <form class="mt-8 space-y-6" @submit="login">
-    <div
-      v-if="errorMsg"
-      class="bg-red-500 py-2 px-5 rounded text-white flex justify-between items-center"
-    >
-      <p>Login Failed</p>
-
-      <span
-        class="w-8 h-8 rounded-full hover:bg-red-600 flex cursor-pointer p-1 transition-colors"
-        @click="errorMsg = ''"
-      >
-        <XIcon class="h-full w-full m-auto" />
-      </span>
-    </div>
     <div class="rounded-md shadow-sm -space-y-px">
       <div>
         <Label for="email-address" value="Email address" />
@@ -70,14 +57,31 @@
     </div>
 
     <div>
-        <Button :full="true" >
-           <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-              <LockClosedIcon class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
-            </span>
-          Sign in
-        </Button>
+      <Button :full="true" :class="[errorMsg ? 'shake' : '']">
+        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+          <LockClosedIcon
+            class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
+            aria-hidden="true"
+          />
+        </span>
+        Sign in
+      </Button>
     </div>
   </form>
+<Transition name="slide-fade">
+  <div
+    v-if="errorMsg"
+    class="bg-red-500 max-w-md w-full py-2 px-5 rounded text-white flex justify-between items-center fixed top-4 "
+  >
+    <p>Login Failed</p>
+    <span
+      class="w-8 h-8 rounded-full hover:bg-red-600 flex cursor-pointer p-1 transition-colors"
+      @click="errorMsg = ''"
+    >
+      <XIcon class="h-full w-full m-auto" />
+    </span>
+  </div>
+  </Transition>
 </template>
 
 <script setup>
@@ -110,6 +114,57 @@ const login = (ev) => {
     })
     .catch((err) => {
       errorMsg.value = err.response.data;
+      setTimeout(() => {
+        errorMsg.value = "";
+      }, 3000);
     });
 };
 </script>
+
+<style scoped>
+.shake {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  transform: translate3d(0, 0, 0);
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+
+/*
+  Enter and leave animations can use different
+  durations and timing functions.
+*/
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(-20px);
+  opacity: 0;
+}
+</style>

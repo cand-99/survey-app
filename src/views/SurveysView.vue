@@ -9,11 +9,14 @@
         </Button>
       </div>
     </template>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+     <div class="text-center" v-if="surveys.loading">Loading. . .</div>
+    <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
       <SurveyListItem
-        v-for="survey in surveys"
+        v-for="(survey, index) in surveys.data"
         :key="survey.id"
         :survey="survey"
+        class="opacity-0 animate-fade-in-down"
+        :style="{animationDelay: `${index * 0.1}s`} "
         @delete="deleteSurvey(survey)"
       />
     </div>
@@ -28,7 +31,7 @@ import PageComponent from "../components/PageComponent.vue";
 import Button from "../components/button/Button.vue";
 import SurveyListItem from "../components/SurveyListItem.vue";
 
-const surveys = computed(() => store.state.surveys.data);
+const surveys = computed(() => store.state.surveys);
 
 store.dispatch("getSurveys");
 
@@ -36,6 +39,10 @@ const deleteSurvey = (survey) => {
   
   if (confirm('Are you sure??')){
      store.dispatch("deleteSurvey", survey.id).then(() => {
+      store.commit('notify', {
+      type: 'delete',
+      message: 'Survey was successfully deleted',
+    });
       store.dispatch("getSurveys");
     });
     }

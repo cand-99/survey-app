@@ -2,6 +2,8 @@
   <div class="min-h-full">
       <Navbar />
         <router-view> </router-view>
+
+        <Notification />
   </div>
 </template>
 
@@ -9,6 +11,7 @@
 import { computed, ref, watch, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 import Navbar from "../components/navbar/Navbar.vue";
+import Notification from "../components/Notification.vue";
 
 
  const routerNames = ref(useRoute().name)

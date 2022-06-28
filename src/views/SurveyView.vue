@@ -19,7 +19,7 @@
 
     <div class="text-center" v-if="surveyLoading">Loading. . .</div>
 
-    <form v-else class="space-y-7" @submit.prevent="saveSurvey">
+    <form v-else class="space-y-7 animate-fade-in-down" @submit.prevent="saveSurvey">
       <div class="shadow sm:rounded-md sm:overflow-hidden">
         <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
           <!-- Image -->
@@ -225,6 +225,10 @@ const questionChange = (question) => {
 
 const saveSurvey = () => {
   store.dispatch("saveSurvey", { ...model.value }).then(({ data }) => {
+    store.commit('notify', {
+      type: 'success',
+      message: 'Survey was successfully updated',
+    });
     router.push({
       name: "Survey",
       params: { id: data.data.id },
@@ -236,6 +240,10 @@ const deleteSurvey = () => {
 
   if (confirm('Are you sure you want to delete this survey?')){
     store.dispatch("deleteSurvey", route.params.id).then(() => {
+      store.commit('notify', {
+      type: 'delete',
+      message: 'Survey was successfully deleted',
+    });
       router.push({
         name: "Surveys"
       });
